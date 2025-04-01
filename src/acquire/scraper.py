@@ -1,6 +1,11 @@
 from bs4 import BeautifulSoup as bs
 import requests
 import pandas as pd
+import logging as log
+import os
+from util.logger import setup_logging
+
+logger = setup_logging()
 
 class Scraper:
 
@@ -40,6 +45,19 @@ class Scraper:
 
         return constituent_dict
     
-    def make_pd(self)->pd.DataFrame:        
-    
+    def make_pd(self)->pd.DataFrame:     
         return pd.DataFrame([x for key, x in self.make_dict().items()]) 
+    
+    @staticmethod
+    def save_df(
+        df, 
+        path, 
+        format='parquet'
+    ):
+        assert os.path.isfile(path)
+
+        if format=='parquet':
+            df.to_parquet(path)
+        #TODO: Add functionality for other formats, feather, SQL db
+        else:
+            logger.error("Can only save to parquet, adding support for other formats later")
